@@ -2,6 +2,8 @@
  * Buttons with [data-inquiry-open="personal|business"] open a native <dialog> with the form.
  * Steps: 準備 → 入力 → 確認 → 送信中 → 受付完了 / 送信失敗（入力内容は保持・再送可）.
  * Submits JSON to window.WISBOX_INQUIRY_ENDPOINT (default: same-origin /api/inquiry). Never uses mailto.
+ * With window.WISBOX_INQUIRY_FORMAT = "lp" it posts straight to the WISBOX LP App's /api/inquiries in that
+ * App's format (the static site has no server of its own), composing the same message the relay used to.
  *
  * A small copy of the page robot lives in the dialog ("stage") and acts out the real state only:
  * it rolls while the form is prepared or a request is in flight, and delivers the envelope into the
@@ -9,6 +11,8 @@
 (function () {
   if (window.WBQ) return;
   var ENDPOINT = window.WISBOX_INQUIRY_ENDPOINT || "/api/inquiry";
+  var LP_FORMAT = window.WISBOX_INQUIRY_FORMAT === "lp";
+  var MIN_FILL_MS = 2500; // faster than a person can fill the form: treat as automated
   var TEL = "03-5829-5767";
   var HOURS = "平日 10:00〜19:00";
 
@@ -353,6 +357,26 @@
     }
   }
 
+  /* the LP App's inquiry shape: the extra fields go into a readable Japanese message */
+  function lpPayload(p) {
+    var line = function (label, value) {
+      return label + "：" + (value || "未記入");
+    };
+    var business = p.kind === "business";
+    var head = business
+      ? ["【WISBOX ご利用案内サイト｜導入のご相談・お見積もり】", line("設置予定場所", p.site), line("希望台数", p.units)]
+      : ["【WISBOX ご利用案内サイト｜ご利用に関するお問い合わせ】", line("ご利用場所", p.place), line("ロッカー番号", p.locker), line("ご利用日時", p.used_at)];
+    return {
+      submission_id: p.submission_id,
+      inquiry_type: business ? "quote" : "inquiry",
+      organization: business ? p.organization : "個人のお客様（ご利用者）",
+      name: p.name,
+      email: p.email,
+      tel: p.tel,
+      message: head.concat(["", p.message]).join("\n"),
+    };
+  }
+
   function send() {
     var st = s();
     if (st.status === "sending") return; // never two requests for one inquiry
@@ -378,6 +402,12 @@
       website: st.website || "",
       elapsed_ms: Date.now() - st.openedAt,
     };
+    if (LP_FORMAT) {
+      /* the checks the relay used to make, before anything leaves the browser */
+      if (payload.website) return finish(k, true); // bot trap: people never fill it
+      if (payload.elapsed_ms < MIN_FILL_MS) return finish(k, false, SERVER_ERRORS.too_fast);
+      payload = lpPayload(payload);
+    }
     var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
     var timer = setTimeout(function () {
       if (ctrl) ctrl.abort();

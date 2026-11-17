@@ -14,7 +14,7 @@ pnpm build    # out/ に静的ファイルを生成
 
 - `main` ブランチに push すると、GitHub Actions（`.github/workflows/pages.yml`）がビルドして GitHub Pages に公開します。
 - 独自ドメインは `public/CNAME`（wisbox.jp）。DNS は Xserver ドメインで設定します（apex に GitHub Pages の A レコード 4 件、`www` に `<アカウント>.github.io` の CNAME）。
-- お問い合わせフォームは静的サイトから外部の受付 API（既定：`https://wisbox-guide.kylon.app/api/inquiry`）へ送信します。変更する場合はビルド時に `NEXT_PUBLIC_INQUIRY_ENDPOINT` を指定してください。フォームが mailto に切り替わることはありません。
+- お問い合わせフォームは静的サイトから WISBOX LP の受付 API（既定：`https://wisbox-smartlocker-lp.kylon.app/api/inquiries`、`https://wisbox.jp` からの呼び出しを許可）へ直接送信します。LP 側で保存し、会社のメールに通知します。変更する場合はビルド時に `NEXT_PUBLIC_INQUIRY_ENDPOINT`（中継 API を使う場合は `NEXT_PUBLIC_INQUIRY_FORMAT=relay` も）を指定してください。フォームが mailto に切り替わることはありません。
 
 ## 主なファイル
 
