@@ -22,7 +22,7 @@ const homeLinks = [
 ] as const;
 
 export function SiteHeader() {
-  const pathname = usePathname();
+  const pathname = usePathname().replace(/(.)\/$/, "$1"); // the static export serves /business/
   const onBusiness = pathname === "/business";
   const onHome = pathname === "/";
 

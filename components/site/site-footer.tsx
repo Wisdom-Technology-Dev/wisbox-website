@@ -13,7 +13,7 @@ const legalLinks = [
 ] as const;
 
 export function SiteFooter() {
-  const pathname = usePathname();
+  const pathname = usePathname().replace(/(.)\/$/, "$1"); // the static export serves /terms/ etc.
   return (
     <footer className="bg-[var(--wb-ink)] text-white">
       <div className="mx-auto grid max-w-[1120px] gap-8 px-5 py-12 md:grid-cols-[1fr_auto] md:px-8">
