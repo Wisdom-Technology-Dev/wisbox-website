@@ -28,8 +28,8 @@ export const extraFees = {
 } as const;
 
 /** Fill in on the day the documents are published, e.g. "2026年12月1日". */
-export const termsEstablishedOn: string | null = "2026年12月20日";
-export const privacyEstablishedOn: string | null = "2026年12月20日";
+export const termsEstablishedOn: string | null = "2026年11月17日";
+export const privacyEstablishedOn: string | null = "2026年11月17日";
 
 export function formatYen(value: number) {
   return `${value.toLocaleString("ja-JP")}円`;
