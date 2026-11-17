@@ -422,7 +422,7 @@ export default function Home() {
                 <MapPin aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-[var(--wb-orange-deep)] md:mt-0" />
                 <p className="flex flex-wrap gap-x-4 gap-y-1 text-[14px] leading-relaxed text-[var(--wb-body)]">
                   <span className="font-bold text-[var(--wb-ink)]">設置場所について</span>
-                  <span>設置場所・ご利用開始日は、決まり次第こちらでお知らせします。</span>
+                  <span>現在、サービス開始に向けて試験運用の準備を進めています。設置場所・ご利用開始日は、決まり次第こちらでお知らせします。</span>
                 </p>
               </div>
             </div>
